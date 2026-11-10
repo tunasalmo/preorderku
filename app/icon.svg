@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="PreOrderKu">
+  <rect width="32" height="32" rx="7" fill="#B0391C" />
+  <path
+    fill="#FBF7EE"
+    fill-rule="evenodd"
+    d="M10 7.5h4.4v17H10v-17Zm4.4 0h4.1a5.5 5.5 0 0 1 0 11h-4.1v-3.4h4.1a2.1 2.1 0 0 0 0-4.2h-4.1V7.5Z"
+  />
+</svg>

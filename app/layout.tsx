@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -26,6 +26,21 @@ export const metadata: Metadata = {
   title: "PreOrderKu — pre-order untuk penjual kampus",
   description:
     "Buka pre-order sehari sebelum produksi. Pembeli pesan lewat satu tautan, kamu masak sesuai angka.",
+  applicationName: "PreOrderKu",
+  appleWebApp: { capable: true, title: "PreOrderKu", statusBarStyle: "default" },
+  // icon.svg / apple-icon.png / favicon.ico di folder app/ dipakai otomatis
+  openGraph: {
+    title: "PreOrderKu",
+    description: "Pre-order sehari sebelum masak. Satu tautan untuk pembeli kampus.",
+    type: "website",
+    locale: "id_ID",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F3EEE3",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
