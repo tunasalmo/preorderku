@@ -11,7 +11,17 @@ Pre-order H-1 untuk penjual makanan kampus. Next.js 14 (App Router) + Tailwind +
    - Redirect URLs: `http://localhost:3000/auth/callback` dan `https://<domain-vercel>/auth/callback`
 4. Pastikan provider **Email** aktif (magic link). Untuk uji cepat, matikan "Confirm email" bila perlu.
 
-## 2. Jalankan lokal
+## 2. Aktifkan pembayaran (Midtrans, opsional tapi disarankan)
+
+1. Daftar di [midtrans.com](https://midtrans.com) (sandbox langsung aktif).
+2. Ambil **Server Key** dan **Client Key** (Settings → Access Keys) — sandbox diawali `SB-Mid-`.
+3. Di dashboard Midtrans → Settings → **Payment Notification URL**: isi `<origin>/api/midtrans/notification` (mis. `http://localhost:3000/api/midtrans/notification`).
+4. Isi env (lihat di bawah): `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY` (dari Supabase → Project Settings → API). Biarkan `MIDTRANS_IS_PRODUCTION` kosong selama sandbox.
+5. Aktifkan metode pembayaran (QRIS/GoPay) di dashboard Midtrans. Biaya: QRIS 0,7% per transaksi sukses; VA flat Rp4.000.
+
+Uang pembeli masuk ke rekening yang kamu daftarkan. Status "Lunas" di dashboard ter-update otomatis lewat webhook.
+
+## 3. Jalankan lokal
 
 ```bash
 cp .env.local.example .env.local   # lalu isi dua nilai di bawah
@@ -32,10 +42,10 @@ Ambil dari **Project Settings → API**. Buka `http://localhost:3000`, masuk lew
 npm run build && npm start   # cek produksi
 ```
 
-## 3. Deploy Vercel (Hobby, gratis)
+## 4. Deploy Vercel (Hobby, gratis)
 
 1. Push repo ke GitHub, import di [vercel.com/new](https://vercel.com/new). Framework terdeteksi otomatis.
-2. Tambahkan `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY` di **Environment Variables**.
+2. Tambahkan di **Environment Variables**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION=false`.
 3. Deploy, lalu tambahkan `https://<domain>/auth/callback` ke Redirect URLs Supabase.
 
 ## Catatan

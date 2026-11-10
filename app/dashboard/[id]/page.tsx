@@ -83,7 +83,7 @@ export default function PreorderDetailPage() {
   const totalOmzet = produk.reduce((sum, p) => sum + (terjual[p.id] ?? 0) * p.price, 0);
   const jumlahPesanan = data?.orders.length ?? 0;
 
-  async function ubahPesanan(orderId: string, patch: Partial<Pick<Order, "paid" | "picked_up">>) {
+  async function ubahPesanan(orderId: string, patch: Partial<Order>) {
     if (!data) return;
     const lama = data.orders;
     setData({ ...data, orders: lama.map((o) => (o.id === orderId ? { ...o, ...patch } : o)) });
@@ -373,7 +373,21 @@ export default function PreorderDetailPage() {
                     })}
                   </ul>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {(o.paid || o.payment_status === "paid") && (
+                      <span className="chip border-olive/40 text-olive">
+                        Lunas{o.payment_method ? ` · ${o.payment_method}` : ""}
+                      </span>
+                    )}
+                    {o.payment_status === "pending" && (
+                      <span className="chip border-line text-ink-soft">Menunggu bayar</span>
+                    )}
+                    {o.payment_status === "failed" && (
+                      <span className="chip border-accent/40 text-accent">Bayar gagal</span>
+                    )}
+                    {o.payment_status === "unpaid" && !o.paid && (
+                      <span className="chip border-line text-ink-faint">Belum bayar</span>
+                    )}
                     {(
                       [
                         ["paid", "Sudah bayar", o.paid],
@@ -384,7 +398,15 @@ export default function PreorderDetailPage() {
                         key={field}
                         type="button"
                         aria-pressed={nilai}
-                        onClick={() => ubahPesanan(o.id, { [field]: !nilai })}
+                        onClick={() =>
+                          field === "paid"
+                            ? ubahPesanan(o.id, {
+                                paid: !nilai,
+                                payment_status: nilai ? "unpaid" : "paid",
+                                payment_method: !nilai && !o.payment_method ? "manual" : o.payment_method,
+                              })
+                            : ubahPesanan(o.id, { picked_up: !nilai })
+                        }
                         className={
                           "chip transition-colors " +
                           (nilai

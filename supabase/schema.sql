@@ -31,8 +31,32 @@ create table if not exists public.orders (
   buyer_phone   text not null,
   paid          boolean not null default false,
   picked_up     boolean not null default false,
-  created_at    timestamptz not null default now()
+  created_at    timestamptz not null default now(),
+  -- pembayaran otomatis (Midtrans Snap)
+  payment_status    text not null default 'unpaid',
+  payment_method    text,
+  snap_token        text,
+  midtrans_order_id text,
+  gross_amount      integer,
+  paid_at           timestamptz
 );
+
+-- idempoten untuk projek yang skema-nya sudah terpasang
+alter table public.orders add column if not exists payment_status    text not null default 'unpaid';
+alter table public.orders add column if not exists payment_method    text;
+alter table public.orders add column if not exists snap_token        text;
+alter table public.orders add column if not exists midtrans_order_id text;
+alter table public.orders add column if not exists gross_amount      integer;
+alter table public.orders add column if not exists paid_at           timestamptz;
+
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'orders_payment_status_check') then
+    alter table public.orders add constraint orders_payment_status_check
+      check (payment_status in ('unpaid', 'pending', 'paid', 'failed'));
+  end if;
+end $$;
+
+create index if not exists orders_midtrans_idx on public.orders (midtrans_order_id);
 
 create table if not exists public.order_items (
   id         uuid primary key default gen_random_uuid(),

@@ -20,6 +20,8 @@ export type Product = {
   max_qty: number | null;
 };
 
+export type PaymentStatus = "unpaid" | "pending" | "paid" | "failed";
+
 export type Order = {
   id: string;
   preorder_id: string;
@@ -28,6 +30,12 @@ export type Order = {
   paid: boolean;
   picked_up: boolean;
   created_at: string;
+  payment_status: PaymentStatus;
+  payment_method: string | null;
+  snap_token: string | null;
+  midtrans_order_id: string | null;
+  gross_amount: number | null;
+  paid_at: string | null;
 };
 
 export type OrderItem = {

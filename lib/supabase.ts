@@ -36,3 +36,24 @@ export function supabaseServer(): SupabaseClient {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
+
+let adminClient: SupabaseClient | null = null;
+
+/**
+ * Klien service-role HANYA untuk server (route handler webhook & server action).
+ * Melewati RLS — jangan pernah dipanggil dari komponen client.
+ */
+export function supabaseAdmin(): SupabaseClient {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  if (!isSupabaseConfigured || !serviceKey) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY belum diisi di env server (jangan pakai anon key).",
+    );
+  }
+  if (!adminClient) {
+    adminClient = createClient(url, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
+  return adminClient;
+}
