@@ -1,7 +1,7 @@
 "use server";
 
 import { supabaseAdmin, supabaseServer } from "@/lib/supabase";
-import { createSnapTransaction, midtransEnabled } from "@/lib/midtrans";
+import { cekStatusMidtrans, createSnapTransaction, midtransEnabled } from "@/lib/midtrans";
 
 export type HasilPesan =
   | { ok: true; orderId: string }
@@ -56,11 +56,19 @@ export async function createPayment(orderId: string): Promise<HasilBayar> {
       return { ok: false, message: "Pesanan ini sudah lunas." };
     }
 
-    type Item = { qty: number; products: { price: number }[] | null };
+    // PostgREST bisa mengembalikan relasi sebagai objek atau array — tangani dua-duanya
+    type Harga = { price: number } | { price: number }[] | null;
+    type Item = { qty: number; products: Harga };
     const items = (order.order_items ?? []) as Item[];
     if (items.length === 0) return { ok: false, message: "Pesanan kosong." };
 
-    const gross = items.reduce((sum, it) => sum + it.qty * (it.products?.[0]?.price ?? 0), 0);
+    const hargaSatuan = (p: Harga): number => {
+      if (!p) return 0;
+      const v = Array.isArray(p) ? p[0]?.price : p.price;
+      return typeof v === "number" && Number.isFinite(v) ? v : Number(v) || 0;
+    };
+
+    const gross = Math.round(items.reduce((sum, it) => sum + it.qty * hargaSatuan(it.products), 0));
     if (gross <= 0) return { ok: false, message: "Jumlah pembayaran tidak valid." };
 
     const midtransOrderId = `POK-${orderId.replace(/-/g, "").slice(0, 12)}-${Date.now().toString(36)}`;
@@ -107,13 +115,43 @@ export async function paymentStatus(orderId: string): Promise<{
   paid: boolean;
 }> {
   try {
-    const { data } = await supabaseAdmin()
+    const supabase = supabaseAdmin();
+    const { data } = await supabase
       .from("orders")
-      .select("payment_status, paid")
+      .select("payment_status, paid, midtrans_order_id")
       .eq("id", orderId)
       .maybeSingle();
     if (!data) return { status: "unknown", paid: false };
-    return { status: data.payment_status, paid: data.paid };
+
+    let status = data.payment_status as "unpaid" | "pending" | "paid" | "failed";
+
+    // fallback tanpa webhook: tanya langsung ke Midtrans selama masih menunggu
+    if (status === "pending" && data.midtrans_order_id && midtransEnabled) {
+      const remote = await cekStatusMidtrans(data.midtrans_order_id);
+      const ts = remote?.transaction_status;
+      if (ts === "settlement" || (ts === "capture" && remote?.fraud_status !== "challenge")) {
+        await supabase
+          .from("orders")
+          .update({
+            payment_status: "paid",
+            paid: true,
+            paid_at: new Date().toISOString(),
+            payment_method: remote?.payment_type ?? "midtrans",
+          })
+          .eq("id", orderId)
+          .eq("payment_status", "pending");
+        status = "paid";
+      } else if (ts === "deny" || ts === "cancel" || ts === "expire" || ts === "failure") {
+        await supabase
+          .from("orders")
+          .update({ payment_status: "failed", payment_method: remote?.payment_type ?? null })
+          .eq("id", orderId)
+          .eq("payment_status", "pending");
+        status = "failed";
+      }
+    }
+
+    return { status, paid: status === "paid" || Boolean(data.paid) };
   } catch {
     return { status: "unknown", paid: false };
   }

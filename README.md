@@ -19,7 +19,7 @@ Pre-order H-1 untuk penjual makanan kampus. Next.js 14 (App Router) + Tailwind +
 4. Isi env (lihat di bawah): `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY` (dari Supabase → Project Settings → API). Biarkan `MIDTRANS_IS_PRODUCTION` kosong selama sandbox.
 5. Aktifkan metode pembayaran (QRIS/GoPay) di dashboard Midtrans. Biaya: QRIS 0,7% per transaksi sukses; VA flat Rp4.000.
 
-Uang pembeli masuk ke rekening yang kamu daftarkan. Status "Lunas" di dashboard ter-update otomatis lewat webhook.
+Uang pembeli masuk ke rekening yang kamu daftarkan. Status "Lunas" ter-update otomatis lewat webhook. Webhook tidak bisa menjangkau `localhost`, jadi untuk uji lokal status tetap disinkronkan dari polling halaman pembeli yang menanyakan status transaksi langsung ke Midtrans. Tetap isi Notification URL di produksi.
 
 ## 3. Jalankan lokal
 

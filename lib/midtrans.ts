@@ -14,9 +14,7 @@ export const midtransBase = isProd
   ? "https://app.midtrans.com"
   : "https://app.sandbox.midtrans.com";
 
-export const snapJsUrl = `${midtransBase}/snap/v1/snap.js?client_key=${encodeURIComponent(
-  midtransClientKey,
-)}`;
+export const snapJsUrl = `${midtransBase}/snap/snap.js?client_key=${encodeURIComponent(midtransClientKey)}`;
 
 type SnapResponse = {
   token: string;
@@ -57,6 +55,34 @@ export async function createSnapTransaction(params: {
     throw new Error(data.error_message || data.status_message || `Midtrans HTTP ${res.status}`);
   }
   return data;
+}
+
+/**
+ * Cek status transaksi langsung ke Midtrans (bukan webhook).
+ * Dipakai polling halaman pembeli: membuat status "Lunas" tetap ter-update
+ * walau webhook belum/tidak bisa menjangkau server (mis. localhost).
+ * Mengembalikan null bila transaksi belum ada di Midtrans.
+ */
+export async function cekStatusMidtrans(
+  midtransOrderId: string,
+): Promise<{ transaction_status: string; payment_type?: string; fraud_status?: string } | null> {
+  const res = await fetch(`${midtransBase}/v2/${encodeURIComponent(midtransOrderId)}/status`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: "Basic " + Buffer.from(midtransServerKey + ":").toString("base64"),
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const data = (await res.json().catch(() => null)) as
+    | { transaction_status?: string; payment_type?: string; fraud_status?: string }
+    | null;
+  if (!data?.transaction_status) return null;
+  return {
+    transaction_status: data.transaction_status,
+    payment_type: data.payment_type,
+    fraud_status: data.fraud_status,
+  };
 }
 
 /** Verifikasi notifikasi webhook: sha512(order_id + status_code + gross_amount + server_key). */

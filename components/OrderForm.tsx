@@ -12,6 +12,7 @@ type Props = {
   catatanTutup: string;
   paymentTersedia: boolean;
   snapJsUrl: string | null;
+  snapClientKey: string | null;
 };
 
 type PayState = {
@@ -46,6 +47,7 @@ export default function OrderForm({
   catatanTutup,
   paymentTersedia,
   snapJsUrl,
+  snapClientKey,
 }: Props) {
   const [qty, setQty] = useState<Record<string, number>>({});
   const [nama, setNama] = useState("");
@@ -152,6 +154,7 @@ export default function OrderForm({
     await new Promise<void>((resolve, reject) => {
       const s = document.createElement("script");
       s.src = snapJsUrl;
+      if (snapClientKey) s.setAttribute("data-client-key", snapClientKey);
       s.onload = () => resolve();
       s.onerror = () => reject(new Error("Snap gagal dimuat"));
       document.head.appendChild(s);

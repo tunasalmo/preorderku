@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import OrderForm from "@/components/OrderForm";
-import { midtransEnabled, snapJsUrl } from "@/lib/midtrans";
+import { midtransClientKey, midtransEnabled, snapJsUrl } from "@/lib/midtrans";
 import { isSupabaseConfigured, supabaseServer } from "@/lib/supabase";
 import { tanggalPanjang, waktuLengkap } from "@/lib/format";
 import type { PublicProduct } from "@/lib/types";
@@ -124,6 +124,7 @@ export default async function PreorderPublikPage({ params }: { params: { slug: s
         catatanTutup={catatanTutup}
         paymentTersedia={midtransEnabled}
         snapJsUrl={midtransEnabled ? snapJsUrl : null}
+        snapClientKey={midtransEnabled ? midtransClientKey : null}
       />
 
       <p className="mt-8 text-[12px] leading-relaxed text-ink-faint">
