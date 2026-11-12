@@ -4,11 +4,11 @@
 
 PreOrderKu adalah aplikasi berbasis web yang membantu mahasiswa penjual makanan mengelola pemesanan makanan menggunakan sistem *pre-order H-1*. Dengan sistem ini, pembeli dapat memesan makanan sebelum hari pengambilan, sementara penjual dapat mengetahui jumlah pesanan lebih awal sehingga proses persiapan dan produksi menjadi lebih terencana.
 
-🌐 **Live Demo:** https://preorderku.vercel.app
+**Live Demo:** https://preorderku.vercel.app
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 ### Untuk Penjual
 - **Autentikasi:** Login menggunakan email dengan sistem Magic Link.
@@ -29,7 +29,7 @@ PreOrderKu adalah aplikasi berbasis web yang membantu mahasiswa penjual makanan 
 
 ---
 
-## 🛠️ Teknologi
+## Teknologi
 
 | Teknologi | Kegunaan |
 |---|---|
@@ -43,7 +43,7 @@ PreOrderKu adalah aplikasi berbasis web yang membantu mahasiswa penjual makanan 
 
 ---
 
-## 📂 Struktur Proyek
+## Struktur Proyek
 
 ```text
 preorderku/
@@ -63,7 +63,7 @@ preorderku/
 
 ---
 
-## 🚀 Instalasi dan Menjalankan Proyek
+## Instalasi dan Menjalankan Proyek
 
 ### 1. Persyaratan
 
@@ -145,7 +145,7 @@ http://localhost:3000
 
 ---
 
-## 💳 Integrasi Pembayaran Midtrans
+## Integrasi Pembayaran Midtrans
 
 PreOrderKu mendukung integrasi Midtrans untuk memproses pembayaran secara online.
 
@@ -167,7 +167,7 @@ Status pembayaran akan diperbarui melalui mekanisme notifikasi webhook Midtrans.
 
 ---
 
-## 🌐 Deployment ke Vercel
+## Deployment ke Vercel
 
 PreOrderKu dapat di-deploy menggunakan Vercel.
 
@@ -186,7 +186,7 @@ Setelah deployment berhasil, aplikasi dapat diakses melalui domain Vercel.
 
 ---
 
-## 🔒 Keamanan dan Validasi
+## Keamanan dan Validasi
 
 PreOrderKu menerapkan beberapa mekanisme untuk menjaga keamanan dan integritas data:
 
@@ -198,7 +198,7 @@ PreOrderKu menerapkan beberapa mekanisme untuk menjaga keamanan dan integritas d
 
 ---
 
-## 📊 Rekomendasi Produksi
+## Rekomendasi Produksi
 
 PreOrderKu menyediakan fitur rekomendasi produksi sederhana berdasarkan riwayat pesanan.
 
@@ -215,7 +215,7 @@ Jika belum terdapat riwayat pesanan, sistem akan menampilkan informasi bahwa dat
 
 ---
 
-## 📌 Informasi Proyek
+## Informasi Proyek
 
 | Keterangan | Detail |
 |---|---|
